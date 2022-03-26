@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-from simulator import Simulator
+from sensor import Sensor
 
 def default_settings():
     base_folder = Path(__file__).resolve().parent.parent
@@ -17,5 +17,5 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', dest='settings_file', type=lambda x: is_valid_file(parser, x), help='settings file', default=default_settings())
 args = parser.parse_args()
 
-simulator = Simulator(args.settings_file)
-simulator.run()
+sensor = Sensor(args.settings_file)
+sensor.run()

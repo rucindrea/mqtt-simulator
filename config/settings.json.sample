@@ -1,0 +1,61 @@
+{
+    "BROKER_URL": "test.mosquitto.org",
+    "BROKER_PORT": 1883,
+    "SENSOR_NAME": "my_motion_sensor",
+    "SENSOR_TYPE": "123",
+    "SENSOR_SERIAL": "MS123",
+    "SENSOR_SW_VERSION": "1.1",
+    "SENSOR_HW_VERSION": "2.4",
+    "SENSOR_INFO_TOPIC": "info",
+    "SENSOR_VALUES": [
+        {
+            "TYPE": "single",
+            "NAME": "daylight",
+            "TIME_INTERVAL": 10,
+            "RETAIN_PROBABILITY": 0.1,
+            "DATA": [
+                {
+                    "NAME": "level",
+                    "TYPE": "float",
+                    "MIN_VALUE": 0,
+                    "MAX_VALUE": 1,
+                    "MAX_STEP": 0.6
+                },
+                {
+                    "NAME": "daylight_trigger", 
+                    "TYPE": "trigger",
+                    "TRIGGER_NAME": "level", 
+                    "TRIGGER_LEVEL": 0.7
+
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "NAME": "temperature",
+            "TIME_INTERVAL": 60, 
+            "RETAIN_PROBABILITY": 0.5,
+            "DATA": [
+                {
+                    "NAME": "value",
+                    "TYPE": "float",
+                    "MIN_VALUE": 20,
+                    "MAX_VALUE": 55,
+                    "MAX_STEP": 3
+                }
+            ]
+        },
+        {
+            "TYPE": "single",
+            "NAME": "proximity",
+            "TIME_INTERVAL": 60, 
+            "RETAIN_PROBABILITY": 0.5,
+            "DATA": [
+                {
+                    "NAME": "triggered",
+                    "TYPE": "bool"
+                }
+            ]
+        }
+    ]
+}

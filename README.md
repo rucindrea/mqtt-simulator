@@ -1,21 +1,20 @@
-# MQTT Simulator
+# MQTT Motion Sensor Simulator
 
-Easy-to-configure MQTT simulator written in [Python 3](https://www.python.org/) to simulate the sending of JSON objects from sensors or devices to a broker.
+Easy-to-configure MQTT sensor simulator written in [Python 3](https://www.python.org/) to simulate the sending of JSON objects from sensors or devices to a broker.
 
 [Features](#features) •
 [Getting Started](#getting-started) •
 [Configuration](#configuration) •
 [Authors](#authors)
 
-![Simulator Running](images/simulator-running.gif)
 
 ## Features
 
-* Small and easy-to-configure simulator for publishing data to a broker  
+* Small and easy-to-configure simulator for a motion sensor publishing data to a broker  
 * Configuration from a single JSON file  
 * Connection on pre-defined fixed topics  
-* Connection on multiple topics that have a variable id or items at the end  
 * Random variation of data generated according to configuration parameters  
+* Subscription to `/in` topics that allow for feeding values for each of the configured topics
 
 ## Getting Started
 
@@ -35,19 +34,22 @@ pip3 install -r requirements.txt
 
 #### Running
 
-The default simulator settings can be changed in the `config/settings.json` file.
+The default simulator settings can be changed in the `config/settings.json` file. A sample file, `config/settings.json.sample` is provided. Change that to connect to the broker you want. 
 
+
+The command 
 ```shell
-python3 mqtt-simulator/main.py
+python3 mqtt-sensor/main.py
 ```
 
-Runs the simulator according to the settings file.  
+runs the sensor simulator according to the settings file.  
+
 The terminal will show the simulator event log.
 
 Optionally, you can pass a flag with the path to settings file:
 
 ```shell
-python3 mqtt-simulator/main.py -f <path/settings.json>
+python3 mqtt-sensor/main.py -f <path/settings.json>
 ```
 
 ## Configuration
@@ -56,7 +58,7 @@ python3 mqtt-simulator/main.py -f <path/settings.json>
 
     ```json
     {
-        "BROKER_URL": "mqtt.eclipse.org",
+        "BROKER_URL": "test.mosquitto.org",
         "BROKER_PORT": 1883,
         "TOPICS": [
             ...
@@ -70,11 +72,11 @@ python3 mqtt-simulator/main.py -f <path/settings.json>
     | `BROKER_PORT` | number | The port used by the broker | yes |
     | `TOPICS` | array\<Objects> | Specification of topics and how they will be published | yes |
 
-* The key **TOPICS** has a array of objects where each one has the format:
+* The key **SENSOR_VALUES** has a array of objects where each one has the format:
 
     ```json
     {
-        "TYPE": "multiple",
+        "TYPE": "single",
         "PREFIX": "temperature",
         "RANGE_START": 1,
         "RANGE_END": 2,
@@ -118,6 +120,5 @@ python3 mqtt-simulator/main.py -f <path/settings.json>
     | `MAX_STEP` | number | Maximum change that can be applied to the property from a published data to the next | If `TYPE` is different from `"bool"` |
 
 ## Authors
+* repository originally forked from https://github.com/DamascenoRafael/mqtt-simulator
 
-[![DamascenoRafael](https://github.com/DamascenoRafael.png?size=70)](https://github.com/DamascenoRafael)
- [![Maasouza](https://github.com/Maasouza.png?size=70)](https://github.com/Maasouza)
