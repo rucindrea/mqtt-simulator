@@ -65,48 +65,53 @@ class TopicAutoPublish(SensorTopic, threading.Thread):
     def run(self):
         self.connect()
         while True:
-            if self.command_data == {}:
-                payload = self.generate_data()
-                self.old_payload = payload
-                self.client.publish(topic=self.topic_url, payload=json.dumps(payload), qos=2, retain= False)
-            else:
-                self.old_payload = self.command_data
-                self.client.publish(topic=self.topic_url, payload=json.dumps(self.command_data), qos=2, retain= False)
+            payload = self.generate_data()
+            self.old_payload = payload
+            self.client.publish(topic=self.topic_url, payload=json.dumps(payload), qos=2, retain= False)
             time.sleep(self.time_interval)
 
     def generate_data(self):
         payload = {}
-        
+        if "time_interval" in self.command_data:
+            self.time_interval = self.command_data["time_interval"]
+            
+            
         if self.old_payload == None:
             # generate initial data
             for data in self.topic_data:
-                if data['TYPE'] == 'int':
-                    payload[data['NAME']] = random.randint(data['MIN_VALUE'], data['MAX_VALUE'])
-                elif data['TYPE'] == 'float':
-                    payload[data['NAME']] = random.uniform(data['MIN_VALUE'], data['MAX_VALUE'])
-                elif data['TYPE'] == 'bool':
-                    payload[data['NAME']] = random.choice([True, False])
-                elif data['TYPE'] == 'trigger':
-                    if payload[data["TRIGGER_NAME"]] < data["TRIGGER_LEVEL"]:
-                        payload[data['NAME']] = False
-                    else:
-                        payload[data['NAME']] = True
+                if data['NAME'] in self.command_data:
+                    payload[data['NAME']] = self.command_data[data['NAME']]
+                else:
+                    if data['TYPE'] == 'int':
+                        payload[data['NAME']] = random.randint(data['MIN_VALUE'], data['MAX_VALUE'])
+                    elif data['TYPE'] == 'float':
+                        payload[data['NAME']] = random.uniform(data['MIN_VALUE'], data['MAX_VALUE'])
+                    elif data['TYPE'] == 'bool':
+                        payload[data['NAME']] = random.choice([True, False])
+                    elif data['TYPE'] == 'trigger':
+                        if payload[data["TRIGGER_NAME"]] < data["TRIGGER_LEVEL"]:
+                            payload[data['NAME']] = False
+                        else:
+                            payload[data['NAME']] = True
         else:
             # generate next data
             payload = self.old_payload
             for data in self.topic_data:
-                if random.random() > (1 - self.retain_probability):
-                    continue
-                if data['TYPE'] == 'bool':
-                    payload[data['NAME']] = not payload[data['NAME']]
-                elif data['TYPE'] == 'trigger':
-                    if payload[data["TRIGGER_NAME"]] < data["TRIGGER_LEVEL"]:
-                        payload[data['NAME']] = False
-                    else:
-                        payload[data['NAME']] = True
+                if data['NAME'] in self.command_data:
+                    payload[data['NAME']] = self.command_data[data['NAME']]
                 else:
-                    step = random.uniform(-data['MAX_STEP'], data['MAX_STEP']) 
-                    step = round(step) if data['TYPE'] == 'int' else step
-                    payload[data['NAME']] = max(payload[data['NAME']]+step, data['MIN_VALUE']) if step < 0 else min(payload[data['NAME']]+step, data['MAX_VALUE'])
+                    if random.random() > (1 - self.retain_probability):
+                        continue
+                    if data['TYPE'] == 'bool':
+                        payload[data['NAME']] = not payload[data['NAME']]
+                    elif data['TYPE'] == 'trigger':
+                        if payload[data["TRIGGER_NAME"]] < data["TRIGGER_LEVEL"]:
+                            payload[data['NAME']] = False
+                        else:
+                            payload[data['NAME']] = True
+                    else:
+                        step = random.uniform(-data['MAX_STEP'], data['MAX_STEP']) 
+                        step = round(step) if data['TYPE'] == 'int' else step
+                        payload[data['NAME']] = max(payload[data['NAME']]+step, data['MIN_VALUE']) if step < 0 else min(payload[data['NAME']]+step, data['MAX_VALUE'])
 
         return payload
